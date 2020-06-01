@@ -7,3 +7,21 @@
 #greeting-container {
   margin-top: 20px;
 }
+
+.img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body {
+  background-color: rgb(33, 35, 36);
+  border : 8px rgb(33, 35, 36);
+}
+
+h1 {
+  color: white;
+}
+p {
+  color: white;
+}
