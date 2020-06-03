@@ -29,7 +29,6 @@ public class DataServlet extends HttpServlet {
 
     ArrayList<String> mylist = new ArrayList<String>();
         
-
     public DataServlet(){
         mylist.add("Hello this");
         mylist.add("is a");
