@@ -27,18 +27,18 @@ import java.util.ArrayList;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-    ArrayList<String> mylist = new ArrayList<String>();
+    ArrayList<String> commentlist = new ArrayList<String>();
         
     public DataServlet(){
-        mylist.add("Hello this");
-        mylist.add("is a");
-        mylist.add("test");
+        commentlist.add("Hello this");
+        commentlist.add("is a");
+        commentlist.add("test");
     }
     
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         
-        String json = new Gson().toJson(mylist);
+        String json = new Gson().toJson(commentlist);
 
         response.setContentType("application/json;");
         response.getWriter().println(json);
