@@ -34,10 +34,21 @@
       <h2><a href="index2.html">About Me.</a><h2>
       <h2><a href="index3.html">My Coursework and Projects.</a><h2>
       <h2><a href="index4.html">Interests and Hobbies.</a><h2>
+      
+      <h1>Comment</h1>
 
-      <button onclick="getMessage()">Fetch some Data!</button>
-      <div id="data-container"></div>
+    <form action="/comments" method="POST" id="form1" >
 
+      <p>Enter a comma-separated list of words:</p>
+      <textarea name="text-input">Name, LastName, Comment</textarea>
+      <br>
+
+      <!--<a href="/comments"><input type="submit" /></a>-->
+    </form>
+     <button type="submit" form="form1" value="Submit">Submit</button>
+     <p><a href="/comments"> Click Here to See other comments!</a></p>
+     <br>
+      
       <a href="https://www.linkedin.com/in/erik-garcia-montoya-2154a8187" target="_blank">
       <img src="http://assets.stickpng.com/images/58e91afdeb97430e81906504.png" width="10%"> 
       </img>
@@ -54,7 +65,7 @@
       </img>
       </a>
 
-       <p><a href="/data"> Click Here for Extra Data!</a></p>
+      
 
     </div>
   </body>
