@@ -28,22 +28,12 @@ import java.util.ArrayList;
 public class DataServlet extends HttpServlet {
 
     ArrayList<String> commentlist = new ArrayList<String>();
-    ArrayList<String> templist = new ArrayList<String>();
-        
-/*
-    public DataServlet(){
-        commentlist.add("Hello this");
-        commentlist.add("is a");
-        commentlist.add("test");
-    }
-*/
+    ArrayList<String> comment = new ArrayList<String>();
   
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         
-    
-        //String json = convertToJson(commentlist);
-        String json = new Gson().toJson(templist);
+        String json = new Gson().toJson(comment);
         response.setContentType("application/json;");
         commentlist.add(json);
 
@@ -59,25 +49,11 @@ public class DataServlet extends HttpServlet {
         // Break the text into individual words.
         // Name, LastName,Comment
         String[] words = text.split("\\s*,\\s*");
-        templist.clear();
-        templist.add(words[0]);
-        templist.add(words[1]);
-        templist.add(words[2]);
+        comment.clear();
+        comment.add(words[0]);
+        comment.add(words[1]);
+        comment.add(words[2]);
 
-    }
-
-    private String convertToJson(ArrayList<String> wordspass) {
-        String json = "{";
-        json += "\"Name\": ";
-        json += "\"" + wordspass.get(0) + "\"";
-        json += ", ";
-        json += "\"Last Name\": ";
-        json += "\"" + wordspass.get(1) + "\"";
-        json += ", ";
-        json += "\"Comment\": ";
-        json += wordspass.get(2);
-        json += "}";
-        return json;
     }
 
     private String getParameter(HttpServletRequest request, String name, String defaultValue) {
