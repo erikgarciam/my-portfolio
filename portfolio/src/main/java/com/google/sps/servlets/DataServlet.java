@@ -24,41 +24,64 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
+
+ class Comment{
+    private String name;
+    private String lastname;
+    private String comment;
+
+    public void setName(String name_){name = name_;}
+    public void setLName(String lastname_){lastname = lastname_;}
+    public void setComment(String comment_){comment = comment_;}
+}
+
+class CheckEmpty{
+    private boolean empty = false;
+
+    public void setEmpty(boolean empty_){empty = empty_;}
+    public boolean isEmpty(){return empty;}
+}
+
 @WebServlet("/comments")
 public class DataServlet extends HttpServlet {
-
+    Comment commentcontainer = new Comment();
+    CheckEmpty checkempty = new CheckEmpty();
     ArrayList<String> commentlist = new ArrayList<String>();
-    ArrayList<String> comment = new ArrayList<String>();
-  
+         
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         
-        String json = new Gson().toJson(comment);
+        Gson gson =new Gson();
+        String json = gson.toJson(commentcontainer);
         response.setContentType("application/json;");
-        commentlist.add(json);
-
+        if(json.length()> 38 || checkempty.isEmpty() == false){
+            commentlist.add(json);
+        }
         for(int i=0; i< commentlist.size(); i++){
             response.getWriter().println(commentlist.get(i));
         }
-        
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String text = getParameter(request, "text-input", "");
+        String name_input = getParameter(request, "name-input", "");
+        String lname_input = getParameter(request, "lname-input", "");
+        String comment_input = getParameter(request, "comment-input", "");
 
-        // Break the text into individual words.
         // Name, LastName,Comment
-        String[] words = text.split("\\s*,\\s*");
-        comment.clear();
-        comment.add(words[0]);
-        comment.add(words[1]);
-        comment.add(words[2]);
+        if(name_input == "" || lname_input =="" || comment_input == ""){
+            checkempty.setEmpty(true);
+        }
+        
+        commentcontainer.setName(name_input);
+        commentcontainer.setLName(lname_input);
+        commentcontainer.setComment(comment_input);
 
     }
 
     private String getParameter(HttpServletRequest request, String name, String defaultValue) {
     String value = request.getParameter(name);
     if (value == null) {
+      checkempty.setEmpty(true);
       return defaultValue;
     }
     return value;
