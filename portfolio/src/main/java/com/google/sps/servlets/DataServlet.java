@@ -24,65 +24,68 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
+
+ class Comment{
+    private String name;
+    private String lastname;
+    private String comment;
+
+    public void setName(String name_){name = name_;}
+    public void setLName(String lastname_){lastname = lastname_;}
+    public void setComment(String comment_){comment = comment_;}
+
+    public String getName(){return name;}
+    public String getLName(){return lastname;}
+    public String getComment(){return comment;}
+}
+
+class CheckEmpty{
+    private boolean empty = false;
+
+    public void setEmpty(boolean empty_){empty = empty_;}
+    public boolean isEmpty(){return empty;}
+}
+
 @WebServlet("/comments")
 public class DataServlet extends HttpServlet {
-
+    Comment commentcontainer = new Comment();
+    CheckEmpty checkempty = new CheckEmpty();
     ArrayList<String> commentlist = new ArrayList<String>();
-    ArrayList<String> templist = new ArrayList<String>();
-        
-/*
-    public DataServlet(){
-        commentlist.add("Hello this");
-        commentlist.add("is a");
-        commentlist.add("test");
-    }
-*/
-  
+         
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         
-    
-        //String json = convertToJson(commentlist);
-        String json = new Gson().toJson(templist);
+        Gson gson =new Gson();
+        String json = gson.toJson(commentcontainer);
         response.setContentType("application/json;");
-        commentlist.add(json);
-
+        if(json.length()> 38 || checkempty.isEmpty() == false){
+            commentlist.add(json);
+        }
         for(int i=0; i< commentlist.size(); i++){
             response.getWriter().println(commentlist.get(i));
         }
-        
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String text = getParameter(request, "text-input", "");
+        String name_input = getParameter(request, "name-input", "");
+        String lname_input = getParameter(request, "lname-input", "");
+        String comment_input = getParameter(request, "comment-input", "");
 
-        // Break the text into individual words.
         // Name, LastName,Comment
-        String[] words = text.split("\\s*,\\s*");
-        templist.clear();
-        templist.add(words[0]);
-        templist.add(words[1]);
-        templist.add(words[2]);
+        if(name_input == "" || lname_input =="" || comment_input == ""){
+            checkempty.setEmpty(true);
+        }
+        
+        commentcontainer.setName(name_input);
+        commentcontainer.setLName(lname_input);
+        commentcontainer.setComment(comment_input);
 
-    }
-
-    private String convertToJson(ArrayList<String> wordspass) {
-        String json = "{";
-        json += "\"Name\": ";
-        json += "\"" + wordspass.get(0) + "\"";
-        json += ", ";
-        json += "\"Last Name\": ";
-        json += "\"" + wordspass.get(1) + "\"";
-        json += ", ";
-        json += "\"Comment\": ";
-        json += wordspass.get(2);
-        json += "}";
-        return json;
     }
 
     private String getParameter(HttpServletRequest request, String name, String defaultValue) {
     String value = request.getParameter(name);
     if (value == null) {
+      checkempty.setEmpty(true);
       return defaultValue;
     }
     return value;
