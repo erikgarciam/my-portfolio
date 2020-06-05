@@ -39,17 +39,9 @@ import java.util.ArrayList;
     public String getComment(){return comment;}
 }
 
-class CheckEmpty{
-    private boolean empty = false;
-
-    public void setEmpty(boolean empty_){empty = empty_;}
-    public boolean isEmpty(){return empty;}
-}
-
 @WebServlet("/comments")
 public class DataServlet extends HttpServlet {
     Comment commentcontainer = new Comment();
-    CheckEmpty checkempty = new CheckEmpty();
     ArrayList<String> commentlist = new ArrayList<String>();
          
     @Override
@@ -58,7 +50,7 @@ public class DataServlet extends HttpServlet {
         Gson gson =new Gson();
         String json = gson.toJson(commentcontainer);
         response.setContentType("application/json;");
-        if(json.length()> 38 || checkempty.isEmpty() == false){
+        if(json.length()> 38){
             commentlist.add(json);
         }
         for(int i=0; i< commentlist.size(); i++){
@@ -72,10 +64,6 @@ public class DataServlet extends HttpServlet {
         String comment_input = getParameter(request, "comment-input", "");
 
         // Name, LastName,Comment
-        if(name_input == "" || lname_input =="" || comment_input == ""){
-            checkempty.setEmpty(true);
-        }
-        
         commentcontainer.setName(name_input);
         commentcontainer.setLName(lname_input);
         commentcontainer.setComment(comment_input);
@@ -85,7 +73,6 @@ public class DataServlet extends HttpServlet {
     private String getParameter(HttpServletRequest request, String name, String defaultValue) {
     String value = request.getParameter(name);
     if (value == null) {
-      checkempty.setEmpty(true);
       return defaultValue;
     }
     return value;
