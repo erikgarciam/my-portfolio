@@ -24,7 +24,7 @@ function addRandomGreeting() {
 
   // Add it to the page.
   const greetingContainer = document.getElementById('greeting-container');
-  greetingContainer.innerText = greeting;
+  greetingContainer.innerHTML = "<p style=\"color:white\"> " + greeting + "</p>";
 }
 
 async function getMessage() {

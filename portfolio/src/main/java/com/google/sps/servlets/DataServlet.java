@@ -44,7 +44,6 @@ public class DataServlet extends HttpServlet {
 
         Gson gson =new Gson();
         String json = gson.toJson(commentcontainer);
-
         response.setContentType("application/json;");
         if(json.length()> 38){
             commentlist.add(json);
@@ -59,7 +58,7 @@ public class DataServlet extends HttpServlet {
         String lname_input = getParameter(request, "lname-input", "");
         String comment_input = getParameter(request, "comment-input", "");
 
-        // Name, LastName,Comment 
+        // Name, LastName,Comment
         commentcontainer.setName(name_input);
         commentcontainer.setLName(lname_input);
         commentcontainer.setComment(comment_input);
