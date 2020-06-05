@@ -39,13 +39,14 @@
 
     <form action="/comments" method="POST" id="form1" >
 
-      <p>Enter a comma-separated list of words:</p>
-      <textarea name="text-input">Name, LastName, Comment</textarea>
+      <p>Enter a comment:</p>
+      <textarea name="name-input" required>Name</textarea>
+      <textarea name="lname-input" required>LastName</textarea>
       <br>
+      <textarea name="comment-input" required>Comment</textarea>
 
-      <!--<a href="/comments"><input type="submit" /></a>-->
+      <a href="/comments"><input type="submit" /></a>
     </form>
-     <button type="submit" form="form1" value="Submit">Submit</button>
      <p><a href="/comments"> Click Here to See other comments!</a></p>
      <br>
       
