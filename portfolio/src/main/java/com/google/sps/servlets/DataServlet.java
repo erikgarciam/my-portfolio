@@ -14,7 +14,12 @@
 
 package com.google.sps.servlets;
 
-
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -22,12 +27,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import java.util.ArrayList;
+import java.util.List;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
  class Comment{
     private String name;
     private String lastname;
     private String comment;
+
+    Comment(String name_, String lastname_, String comment_){
+        name = name_;
+        lastname = lastname_;
+        comment = comment_; 
+    }
 
     public void setName(String name_){name = name_;}
     public void setLName(String lastname_){lastname = lastname_;}
@@ -36,18 +48,36 @@ import java.util.ArrayList;
 
 @WebServlet("/comments")
 public class DataServlet extends HttpServlet {
-    Comment commentcontainer = new Comment();
-    ArrayList<String> commentlist = new ArrayList<String>();
          
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        
+        // Query is declared and sorts comments from newest to oldest.
+        Query query = new Query("Task").addSort("timestamp", SortDirection.DESCENDING);
+
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        PreparedQuery results = datastore.prepare(query);
+        
+        List<String> commentlist = new ArrayList<>();
 
         Gson gson =new Gson();
-        String json = gson.toJson(commentcontainer);
-        response.setContentType("application/json;");
-        if(json.length()> 38){
+        for (Entity entity : results.asIterable()) {
+
+            // Retrieve contents from query/datastore
+            String name = (String) entity.getProperty("name");
+            String lname = (String) entity.getProperty("lname");
+            String comment = (String) entity.getProperty("comment");
+
+            // Create class then convert to string. After converting
+            // to JSON string add to List to display later.
+            Comment commentcontainer = new Comment(name, lname, comment);
+            String json = gson.toJson(commentcontainer);
             commentlist.add(json);
         }
+
+        response.setContentType("application/json;");
+
+        // Display the comments as vertical rows
         for(int i=0; i< commentlist.size(); i++){
             response.getWriter().println(commentlist.get(i));
         }
@@ -57,14 +87,23 @@ public class DataServlet extends HttpServlet {
         String name_input = getParameter(request, "name-input", "");
         String lname_input = getParameter(request, "lname-input", "");
         String comment_input = getParameter(request, "comment-input", "");
+        long timestamp = System.currentTimeMillis();
 
         // Name, LastName,Comment
-        commentcontainer.setName(name_input);
-        commentcontainer.setLName(lname_input);
-        commentcontainer.setComment(comment_input);
+        // Datastoring the Data.
+        Entity taskEntity = new Entity("Task");                                        
+        taskEntity.setProperty("name", name_input);
+        taskEntity.setProperty("lname", lname_input);
+        taskEntity.setProperty("comment", comment_input);
+        taskEntity.setProperty("timestamp", timestamp);
 
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        datastore.put(taskEntity);
+
+        response.sendRedirect("/index.html");
     }
 
+    // Check parameters to see if they are null.
     private String getParameter(HttpServletRequest request, String name, String defaultValue) {
     String value = request.getParameter(name);
     if (value == null) {
@@ -72,5 +111,4 @@ public class DataServlet extends HttpServlet {
     }
     return value;
   }
-  
 }
