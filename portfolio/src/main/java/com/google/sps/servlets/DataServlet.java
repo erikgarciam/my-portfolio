@@ -35,10 +35,10 @@ import java.util.List;
     private String lastname;
     private String comment;
 
-    Comment(String n, String ln, String c){
-        name = n;
-        lastname = ln;
-        comment = c; 
+    Comment(String name_, String lastname_, String comment_){
+        name = name_;
+        lastname = lastname_;
+        comment = comment_; 
     }
 
     public void setName(String name_){name = name_;}
