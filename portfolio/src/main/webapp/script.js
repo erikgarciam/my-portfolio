@@ -28,8 +28,8 @@ function addRandomGreeting() {
 }
 
 async function getMessage() {
-  const response = await fetch('/data');
+  const response = await fetch('/comments');
   const quote = await response.json();
   const json = JSON.stringify(quote)
-  document.getElementById('data-container').innerText = json;
+  document.getElementById('data-container').innerHTML = json +"<br>";
 }
