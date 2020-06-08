@@ -32,11 +32,11 @@ import java.util.List;
 
 @WebServlet("/list-comments")
 public class DataServletList extends HttpServlet{
-    private int getnum = -1;
+    private int usernumber = -1;
 
-    
+
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        getnum = getUserChoice(request);
+        usernumber = getUserChoice(request);
         response.sendRedirect("/index.html");
     }
 
@@ -55,7 +55,7 @@ public class DataServletList extends HttpServlet{
         
         // If user does not define number iterate through for loop
         // until all contents in query are displayed.
-        if(getnum == -1){
+        if(usernumber == -1){
          for (Entity entity : results.asIterable()) {
 
             // Retrieve contents from query/datastore
@@ -73,7 +73,7 @@ public class DataServletList extends HttpServlet{
         // If user defines number iterate through for loop that many
         // times to display user input value.
         else{
-         for (Entity entity : results.asIterable(FetchOptions.Builder.withLimit(getnum))) {
+         for (Entity entity : results.asIterable(FetchOptions.Builder.withLimit(usernumber))) {
 
             // Retrieve contents from query/datastore
             long id = entity.getKey().getId();
