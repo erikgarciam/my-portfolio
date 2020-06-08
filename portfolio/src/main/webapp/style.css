@@ -25,3 +25,20 @@ h1 {
 p {
   color: white;
 }
+
+#comment-list {
+  list-style-type: none;
+}
+
+.comment {
+  background-color: rgb(226, 234, 238);
+  border: thin solid black;
+  display: flex;
+  margin: 10px;
+  padding: 10px;
+  width: 800px;
+}
+
+.comment span {
+  flex-grow: 1;
+}

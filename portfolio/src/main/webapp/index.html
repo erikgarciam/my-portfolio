@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body>
+  <body onload="loadComments()">
     <div id="content">
       <h1 style="text-align:center;">Erik's Portfolio</h1>
       <p style="color:cyan;">Welcome to my Portfolio.</p>
@@ -47,8 +47,18 @@
 
       <a href="/comments"><input type="submit" /></a>
     </form>
-     <p><a href="/comments"> Click Here to See other comments!</a></p>
-     <br>
+
+    <form action="/list-comments" method="POST">
+
+      <p>Choose How Many Comments:</p>
+      <input type="number" name="user-choice" min="1" max="100">
+      <br/><br/>
+
+      <input type="submit" onchange="loadComments()"/>
+    </form>
+
+    
+      <ul id="comment-list"></ul>
 
       <a href="https://www.linkedin.com/in/erik-garcia-montoya-2154a8187" target="_blank">
       <img src="https://logodix.com/logo/4353.png" width="12%"> 
