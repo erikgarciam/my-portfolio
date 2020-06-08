@@ -33,3 +33,41 @@ async function getMessage() {
   const json = JSON.stringify(quote)
   document.getElementById('data-container').innerHTML = json +"<br>";
 }
+
+function loadComments() {
+  fetch('/list-comments').then(response => response.json()).then((commentlist) => {
+    const commentListElement = document.getElementById('comment-list');
+    commentlist.forEach((commentcontainer) => {
+      commentListElement.appendChild(createCommentElement(commentcontainer));
+    })
+  });
+}
+
+/** Creates an element that represents a task, including its delete button. */
+function createCommentElement(commentcontainer) {
+  const squareElement = document.createElement('li');
+  squareElement.className = 'comment';
+
+  const commentElement = document.createElement('span');
+  commentElement.innerHTML= "<h4>"+commentcontainer.name + ' '+commentcontainer.lastname + "</h4>";
+  commentElement.innerHTML =commentElement.innerHTML + commentcontainer.comment;
+  
+  const deleteButtonElement = document.createElement('button');
+  deleteButtonElement.innerText = 'Delete';
+  deleteButtonElement.addEventListener('click', () => {
+    deleteComment(commentcontainer);
+
+    // Remove the task from the DOM.
+    squareElement.remove();
+  });
+
+  squareElement.appendChild(commentElement);
+  squareElement.appendChild(deleteButtonElement);
+  return squareElement;
+}
+
+function deleteComment(commentcontainer) {
+  const params = new URLSearchParams();
+  params.append('id', commentcontainer.id);
+  fetch('/delete-comments', {method: 'POST', body: params});
+}
