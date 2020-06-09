@@ -22,6 +22,10 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.FetchOptions;
 import java.io.IOException;
+import java.io.*; 
+import java.util.*; 
+import java.lang.*;
+import java.lang.Iterable;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -52,28 +56,19 @@ public class DataServletList extends HttpServlet{
         PreparedQuery results = datastore.prepare(query);
                 
         List<Comment> commentlist = new ArrayList<>();
+        Iterable<Entity> queryiterator;
         
-        // If user does not define number iterate through for loop
-        // until all contents in query are displayed.
         if(usernumber == -1){
-         for (Entity entity : results.asIterable()) {
-
-            // Retrieve contents from query/datastore
-            long id = entity.getKey().getId();
-            String name = (String) entity.getProperty("name");
-            String lname = (String) entity.getProperty("lname");
-            String comment = (String) entity.getProperty("comment");
-
-            // Create class then convert to string. After converting
-            // to JSON string add to List to display later.
-            Comment commentcontainer = new Comment(name, lname, comment, id);
-            commentlist.add(commentcontainer);
-         }
+            // If user does not define number iterate through for loop
+            // until all contents in query are displayed.
+            queryiterator = results.asIterable(FetchOptions.Builder.withLimit(10));
         }
-        // If user defines number iterate through for loop that many
-        // times to display user input value.
-        else{
-         for (Entity entity : results.asIterable(FetchOptions.Builder.withLimit(usernumber))) {
+        else {
+            // If user defines number iterate through for loop that many
+            // times to display user input value.
+            queryiterator = results.asIterable(FetchOptions.Builder.withLimit(usernumber));
+        }
+         for (Entity entity : queryiterator) {
 
             // Retrieve contents from query/datastore
             long id = entity.getKey().getId();
@@ -85,7 +80,6 @@ public class DataServletList extends HttpServlet{
             // to JSON string add to List to display later.
             Comment commentcontainer = new Comment(name, lname, comment, id);
             commentlist.add(commentcontainer);
-         }
         }
         
         Gson gson =new Gson();
