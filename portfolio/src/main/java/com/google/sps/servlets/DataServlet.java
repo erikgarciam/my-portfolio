@@ -17,28 +17,24 @@ package com.google.sps.servlets;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.SortDirection;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.google.gson.Gson;
-import java.util.ArrayList;
-import java.util.List;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
  class Comment{
     private String name;
     private String lastname;
     private String comment;
+    private long id;
 
-    Comment(String name_, String lastname_, String comment_){
+    Comment(String name_, String lastname_, String comment_, long id_){
         name = name_;
         lastname = lastname_;
         comment = comment_; 
+        id =id_;
     }
 
     public void setName(String name_){name = name_;}
@@ -48,40 +44,6 @@ import java.util.List;
 
 @WebServlet("/comments")
 public class DataServlet extends HttpServlet {
-         
-    @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        
-        // Query is declared and sorts comments from newest to oldest.
-        Query query = new Query("Task").addSort("timestamp", SortDirection.DESCENDING);
-
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        PreparedQuery results = datastore.prepare(query);
-        
-        List<String> commentlist = new ArrayList<>();
-
-        Gson gson =new Gson();
-        for (Entity entity : results.asIterable()) {
-
-            // Retrieve contents from query/datastore
-            String name = (String) entity.getProperty("name");
-            String lname = (String) entity.getProperty("lname");
-            String comment = (String) entity.getProperty("comment");
-
-            // Create class then convert to string. After converting
-            // to JSON string add to List to display later.
-            Comment commentcontainer = new Comment(name, lname, comment);
-            String json = gson.toJson(commentcontainer);
-            commentlist.add(json);
-        }
-
-        response.setContentType("application/json;");
-
-        // Display the comments as vertical rows
-        for(int i=0; i< commentlist.size(); i++){
-            response.getWriter().println(commentlist.get(i));
-        }
-    }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String name_input = getParameter(request, "name-input", "");
@@ -112,3 +74,4 @@ public class DataServlet extends HttpServlet {
     return value;
   }
 }
+
