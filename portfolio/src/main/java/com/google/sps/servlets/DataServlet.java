@@ -74,4 +74,3 @@ public class DataServlet extends HttpServlet {
     return value;
   }
 }
-
