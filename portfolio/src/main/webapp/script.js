@@ -71,3 +71,10 @@ function deleteComment(commentcontainer) {
   params.append('id', commentcontainer.id);
   fetch('/delete-comments', {method: 'POST', body: params});
 }
+
+/** Creates a map and adds it to the page. */
+function createMap() {
+  const map = new google.maps.Map(
+      document.getElementById('map'),
+      {center: {lat: 33.8829226, lng: -117.8891148}, zoom: 16});
+}
