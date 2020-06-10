@@ -76,5 +76,8 @@ function deleteComment(commentcontainer) {
 function createMap() {
   const map = new google.maps.Map(
       document.getElementById('map'),
-      {center: {lat: 33.8829226, lng: -117.8891148}, zoom: 16});
+      {center: {lat: 33.8829226, lng: -117.8891148}, 
+      zoom: 16,
+      mapTypeId: "satellite"
+      });
 }
