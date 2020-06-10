@@ -3,12 +3,13 @@
     <head>
         <meta charset="UTF-8">
         <title> My Portfolio</title>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDK-7HnmVKUIF0GeKWUtUQDu2gmpq9gOx8"></script>
         <link rel="stylesheet" href="style.css">
         <script src="script.js"></script>
         
         
     </head>
-    <body>
+    <body onload="createMap();">
         <div id="content">
         <h1 style="text-align:center;">Erik's Portfolio</h1>
         <h2 style="color:white"><strong> About Me </strong></h2>
@@ -33,7 +34,9 @@
              means I will be starting my third year at California State University, Fullerton. 
 
         </p>
-
+        <h1>California State University, Fullerton</h1>
+        <div id="map"></div>
+        <p>This page shows a Google Map displaying CSUF!</p>
 
         <div id="center">
         <img src="images/Fully.webp" height="256" width="384"

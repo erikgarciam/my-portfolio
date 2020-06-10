@@ -71,3 +71,23 @@ function deleteComment(commentcontainer) {
   params.append('id', commentcontainer.id);
   fetch('/delete-comments', {method: 'POST', body: params});
 }
+
+/** Creates a map and adds it to the page. */
+function createMap() {
+
+  var myLatLng = {lat: 33.882931, lng: -117.8865506};
+  
+  const map = new google.maps.Map(
+      document.getElementById('map'),
+      {center: myLatLng, 
+      zoom: 16,
+      mapTypeId: "satellite"
+    });
+
+  var marker = new google.maps.Marker({
+    position: myLatLng,
+    map: map,
+    title: 'CSUF!',
+    icon: '/images/fullymarker.png'
+  });
+}
