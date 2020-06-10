@@ -74,10 +74,20 @@ function deleteComment(commentcontainer) {
 
 /** Creates a map and adds it to the page. */
 function createMap() {
+
+  var myLatLng = {lat: 33.882931, lng: -117.8865506};
+  
   const map = new google.maps.Map(
       document.getElementById('map'),
-      {center: {lat: 33.8829226, lng: -117.8891148}, 
+      {center: myLatLng, 
       zoom: 16,
       mapTypeId: "satellite"
-      });
+    });
+
+  var marker = new google.maps.Marker({
+    position: myLatLng,
+    map: map,
+    title: 'CSUF!',
+    icon: '/images/fullymarker.png'
+  });
 }
