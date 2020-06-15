@@ -50,7 +50,10 @@ function createCommentElement(commentcontainer) {
 
   const commentElement = document.createElement('span');
   commentElement.innerHTML= "<h4>"+commentcontainer.name + ' '+commentcontainer.lastname + "</h4>";
-  commentElement.innerHTML =commentElement.innerHTML + commentcontainer.comment;
+  commentElement.innerHTML =commentElement.innerHTML + commentcontainer.comment +"<br>";
+  commentElement.innerHTML =commentElement.innerHTML + "<a href=\"" + commentcontainer.image + "\" />";
+  commentElement.innerHTML =commentElement.innerHTML + "<img src=\"" + commentcontainer.image + "\" />";
+  commentElement.innerHTML =commentElement.innerHTML + "</a>";
   
   const deleteButtonElement = document.createElement('button');
   deleteButtonElement.innerText = 'Delete';
@@ -90,4 +93,21 @@ function createMap() {
     title: 'CSUF!',
     icon: '/images/fullymarker.png'
   });
+}
+
+function onload(){
+    loadComments();
+    fetchcomments();
+}
+
+function fetchcomments(){
+    fetch('/comments')
+      .then((response) => {
+        return response.text();
+        //return response.redirect();
+      })
+      .then((imageUploadUrl) => {
+        const messageForm = document.getElementById('form1');
+        messageForm.action = imageUploadUrl;
+      });
 }

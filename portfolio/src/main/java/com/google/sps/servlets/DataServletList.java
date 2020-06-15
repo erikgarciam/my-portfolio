@@ -38,12 +38,10 @@ import java.util.List;
 public class DataServletList extends HttpServlet{
     private int usernumber = -1;
 
-
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         usernumber = getUserChoice(request);
         response.sendRedirect("/index.html");
     }
-
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -75,10 +73,11 @@ public class DataServletList extends HttpServlet{
             String name = (String) entity.getProperty("name");
             String lname = (String) entity.getProperty("lname");
             String comment = (String) entity.getProperty("comment");
+            String image = (String) entity.getProperty("uploadurl");
 
             // Create class then convert to string. After converting
             // to JSON string add to List to display later.
-            Comment commentcontainer = new Comment(name, lname, comment, id);
+            Comment commentcontainer = new Comment(name, lname, comment, id, image);
             commentlist.add(commentcontainer);
         }
         

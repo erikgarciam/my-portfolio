@@ -14,9 +14,8 @@
 
 package com.google.sps.servlets;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -29,12 +28,15 @@ import javax.servlet.http.HttpServletResponse;
     private String lastname;
     private String comment;
     private long id;
+    private String image;
 
-    Comment(String name_, String lastname_, String comment_, long id_){
+    Comment(String name_, String lastname_, String comment_,
+     long id_, String uploadurl_){
         name = name_;
         lastname = lastname_;
         comment = comment_; 
         id =id_;
+        image = uploadurl_;
     }
 
     public void setName(String name_){name = name_;}
@@ -44,33 +46,15 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/comments")
 public class DataServlet extends HttpServlet {
+    
+     @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+        String upload_url = blobstoreService.createUploadUrl("/newhandler");
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String name_input = getParameter(request, "name-input", "");
-        String lname_input = getParameter(request, "lname-input", "");
-        String comment_input = getParameter(request, "comment-input", "");
-        long timestamp = System.currentTimeMillis();
-
-        // Name, LastName,Comment
-        // Datastoring the Data.
-        Entity taskEntity = new Entity("Task");                                        
-        taskEntity.setProperty("name", name_input);
-        taskEntity.setProperty("lname", lname_input);
-        taskEntity.setProperty("comment", comment_input);
-        taskEntity.setProperty("timestamp", timestamp);
-
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        datastore.put(taskEntity);
-
-        response.sendRedirect("/index.html");
-    }
-
-    // Check parameters to see if they are null.
-    private String getParameter(HttpServletRequest request, String name, String defaultValue) {
-    String value = request.getParameter(name);
-    if (value == null) {
-      return defaultValue;
-    }
-    return value;
-  }
+        response.setContentType("text/html");
+        response.getWriter().println(upload_url);
+    }  
 }
+
+

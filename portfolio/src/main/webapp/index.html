@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body onload="loadComments()">
+  <body onload="onload()" >
     <div id="content">
       <h1 style="text-align:center;">Erik's Portfolio</h1>
       <p style="color:cyan;">Welcome to my Portfolio.</p>
@@ -37,16 +37,20 @@
       
       <h1>Comment</h1>
 
-    <form action="/comments" method="POST" id="form1" >
+    <form method="POST" id="form1" enctype="multipart/form-data" >
 
       <p>Enter a comment:</p>
       <textarea name="name-input" required>Name</textarea>
       <textarea name="lname-input" required>LastName</textarea>
       <br>
       <textarea name="comment-input" required>Comment</textarea>
-
-      <a href="/comments"><input type="submit" /></a>
+      <br>
+      <p>Upload an image:</p>
+      <input type="file" name="image">
+      <br/><br/>
+      <button type="submit">Submit</button>
     </form>
+    <div id="loading-container"></div>
 
     <form action="/list-comments" method="POST">
 
@@ -57,8 +61,18 @@
       <input type="submit" onchange="loadComments()"/>
     </form>
 
-    
       <ul id="comment-list"></ul>
+    
+      <h1>Blobstore Fetch Example</h1>
+    <p>Type a message and click submit:</p>
+
+    <form id="my-form" class="hidden" method="POST" enctype="multipart/form-data">
+      
+      <p>Upload an image:</p>
+      <input type="file" name="image">
+      <br/><br/>
+      <button>Submit</button>
+    </form>
 
       <a href="https://www.linkedin.com/in/erik-garcia-montoya-2154a8187" target="_blank">
       <img src="https://logodix.com/logo/4353.png" width="12%"> 
