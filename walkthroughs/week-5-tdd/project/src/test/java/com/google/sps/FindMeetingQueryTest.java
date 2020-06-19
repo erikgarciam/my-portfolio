@@ -299,7 +299,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 @Test
-  public void justEnoughRoomB() {
+  public void justEnoughRoomOptional() {
 
     Collection<Event> events = Arrays.asList(
         new Event("Event 1", TimeRange.fromStartEnd(TimeRange.START_OF_DAY, TIME_0830AM, false),
