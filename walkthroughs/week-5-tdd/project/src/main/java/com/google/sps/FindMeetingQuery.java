@@ -115,7 +115,6 @@ public final class FindMeetingQuery {
                 listTransfer.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, firstEventStartTime, false));
                 listTransfer.add(TimeRange.fromStartEnd(secondEventEndTime, TimeRange.END_OF_DAY, true));
             }
-            
         }
         else if(!isOverlapped(eventArray)){
 
@@ -134,14 +133,12 @@ public final class FindMeetingQuery {
         }
         avaliableTime = listTransfer;
     }
-
     return avaliableTime;
   }
 
   // Sets times of earliest event and latest events. If event
   // takes more than a day then ignore.
   void SetTimes(Event [] eventArray){
-
     for(int j = 0; j < eventArray.length; j++){
         if(j == 0){
             firstEventStartTime = eventArray[0].getWhen().start();
