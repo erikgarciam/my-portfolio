@@ -17,131 +17,177 @@ package com.google.sps;
 import java.util.*;
 
 public final class FindMeetingQuery {
+
+    int firstEventStartTime;
+    int firstEventEndTime;
+    int secondEventStartTime;
+    int secondEventEndTime;
+
+  // The query function returns free time ranges that attendees might have imbetween meetings or 
+  // after meetings.
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-    Collection<TimeRange> return_value;
+    Collection<TimeRange> avaliableTime;
 
-    List<TimeRange> listtransfer = new ArrayList<TimeRange>();
-    Event[] event_array = events.toArray(new Event[events.size()]);
+    List<TimeRange> listTransfer = new ArrayList<TimeRange>();
+    Event[] eventArray = events.toArray(new Event[events.size()]);
 
-    int request_duration = (int)request.getDuration();
+    int requestDuration = (int)request.getDuration();
 
-    
-
+    SetTimes(eventArray);
 
     if(events.size() == 1){
 
-        int beginning_time= event_array[0].getWhen().start();
-        int ending_time= event_array[0].getWhen().end();
-
-        int same_atendee_adder = 0;
+        // sameAttendeeAdder is a flag that is checked to see if the person creating
+        // a request is already involved in another meeting. If not they have the whole
+        // day to request meeting since they do not have any meetings.
+        int sameAttendeeAdder = 0;
 
         Iterator<String> i = request.getAttendees().iterator();
         while(i.hasNext()){
-            if(event_array[0].getAttendees().contains(i.next()) == true){
-                same_atendee_adder = same_atendee_adder + 1;
+            if(eventArray[0].getAttendees().contains(i.next())){
+                sameAttendeeAdder = sameAttendeeAdder + 1;
             }
         }
 
-        // adder = 1 go ahead but if = 0 TimeRange.WHOLE_DAY
-        if(same_atendee_adder == 1){
-            listtransfer.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, beginning_time, false));
-            listtransfer.add(TimeRange.fromStartEnd(ending_time, TimeRange.END_OF_DAY, true));
+        // If sameAttendeeAdder is 1 the person has a meeting and must be given
+        // the time range before and after the meeting.
+        if(sameAttendeeAdder == 1){
+            listTransfer.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, firstEventStartTime, false));
+            listTransfer.add(TimeRange.fromStartEnd(firstEventEndTime, TimeRange.END_OF_DAY, true));
         }
+
+        // If the adder is 0 then the person has no other meetings to worry about and has
+        // the whole day to create a meeting.
         else{
-            listtransfer.add(TimeRange.WHOLE_DAY);
+            listTransfer.add(TimeRange.WHOLE_DAY);
         }
-        
-        return_value = listtransfer;
+        avaliableTime = listTransfer;
     }
+
+    // If a person tries to create a meeting that takes longer than a day return an empty
+    // range since it is not possible to go beyond a day meeting. If the person has no events
+    // on their schedule, the avaliable timerange to create a meeting is the whole day.
     else if (events.size() == 0){
-        if(request_duration > TimeRange.WHOLE_DAY.duration()){
-            listtransfer.clear();
+        if(requestDuration > TimeRange.WHOLE_DAY.duration()){
+            listTransfer.clear();
         }
         else{
-            listtransfer.add(TimeRange.WHOLE_DAY);
+            listTransfer.add(TimeRange.WHOLE_DAY);
         }
-        
-        return_value = listtransfer;
+        avaliableTime = listTransfer;
     }
+
+    // If there are 2 or more events and the number of attendees are more than just one 
+    // check for overlap and return avaliable timerange 
     else if(events.size() >= 2 && request.getAttendees().size() > 1){
-        if(event_array[0].getWhen().overlaps(event_array[1].getWhen()) == true){
+        if(isOverlapped(eventArray) && eventTakeWholeDay(eventArray) == 0){
             
-            int beginning_time;
-            int ending_time;
-            
-            if(event_array[0].getWhen().start() < event_array[1].getWhen().start()){
-                beginning_time = event_array[0].getWhen().start();
-            }
-            else{
-                beginning_time = event_array[1].getWhen().start();
-            }
-            
-            if(event_array[0].getWhen().end() > event_array[1].getWhen().end()){
-                ending_time = event_array[0].getWhen().end();
-            }
-            else{
-                ending_time = event_array[1].getWhen().end();
+            // Check which event ends the latest since they overlap to find when both 
+            // attendees are free. 
+            int finalEndTime = secondEventEndTime;
+            if(firstEventEndTime > secondEventEndTime){
+                finalEndTime = firstEventEndTime;
             }
 
-            listtransfer.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, beginning_time, false));
-            listtransfer.add(TimeRange.fromStartEnd(ending_time, TimeRange.END_OF_DAY, true));
+            listTransfer.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, firstEventStartTime, false));
+            listTransfer.add(TimeRange.fromStartEnd(finalEndTime, TimeRange.END_OF_DAY, true));
         }
-        else if(event_array[0].getWhen().overlaps(event_array[1].getWhen()) == false){
-            int beginning_time= event_array[0].getWhen().start();
-            int begend_time = event_array[0].getWhen().end();
-            int endbeg_time = event_array[1].getWhen().start();
-            int ending_time = event_array[1].getWhen().end();
-
-            listtransfer.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, beginning_time, false));
-            listtransfer.add(TimeRange.fromStartEnd(begend_time, endbeg_time, false));
-            listtransfer.add(TimeRange.fromStartEnd(ending_time, TimeRange.END_OF_DAY, true));
+        else{
+            // No overlap means a middle free space.
+            listTransfer.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, firstEventStartTime, false));
+            listTransfer.add(TimeRange.fromStartEnd(firstEventEndTime, secondEventStartTime, false));
+            listTransfer.add(TimeRange.fromStartEnd(secondEventEndTime, TimeRange.END_OF_DAY, true));
         }
-        return_value = listtransfer;
+        avaliableTime = listTransfer;
     }
 
-
-    else if(events.size()>= 2 && request.getAttendees().size() <= 1){
-        if(event_array[0].getWhen().overlaps(event_array[1].getWhen()) == true){
-            int beginning_time = event_array[0].getWhen().start();
-            int ending_time = event_array[1].getWhen().end();
-            int wholeday_counter =0;
-
-            for(int i = 0; i < events.size(); i++){
-                if(event_array[i].getWhen().duration() ==  TimeRange.WHOLE_DAY.duration()){
-                    wholeday_counter++;
-                }
-            }
-            if(wholeday_counter == events.size()){
-                listtransfer.clear();
-            }
-            else{
-                listtransfer.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, beginning_time, false));
-                listtransfer.add(TimeRange.fromStartEnd(ending_time, TimeRange.END_OF_DAY, true));
-            }
-            
-        }
-        else if(event_array[0].getWhen().overlaps(event_array[1].getWhen()) == false){
-            int beginning_time= event_array[0].getWhen().start();
-            int begend_time = event_array[0].getWhen().end();
-            int endbeg_time = event_array[1].getWhen().start();
-            int ending_time = event_array[1].getWhen().end();
-
-            long freeSpace = ((event_array[1].getWhen().start()) - (event_array[0].getWhen().end()));
-
-            if (request.getDuration() > freeSpace){
-                listtransfer.clear();
-            }
-            else{
-                listtransfer.add(TimeRange.fromStartDuration(begend_time, request_duration));
-            }
-        }
-        return_value = listtransfer;
-    }
-    
-
+    // This else statements mostly applies to meeting requests that only
+    // specifies for one person.
     else{
-        throw new UnsupportedOperationException("TODO: Implement this method");
+        if(isOverlapped(eventArray)){
+            
+            // If the one person has a meeting thats lasts the whole day
+            // they have no free space.
+            if(eventTakeWholeDay(eventArray) == events.size()){
+                listTransfer.clear();
+            }
+            else{
+                listTransfer.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, firstEventStartTime, false));
+                listTransfer.add(TimeRange.fromStartEnd(secondEventEndTime, TimeRange.END_OF_DAY, true));
+            }
+            
+        }
+        else if(!isOverlapped(eventArray)){
+
+            long freeSpace = ((secondEventStartTime) - (firstEventEndTime));
+
+            // If the request duration is greater than avaliable free time the 
+            // program returns no timerange avaliable.
+            if (request.getDuration() > freeSpace){
+                listTransfer.clear();
+            }
+            // If its not greater than the avaliable free time then return
+            // duration left after event.
+            else{
+                listTransfer.add(TimeRange.fromStartDuration(firstEventEndTime, requestDuration));
+            }
+        }
+        avaliableTime = listTransfer;
     }
-    return return_value;
+
+    return avaliableTime;
+  }
+
+  // Sets times of earliest event and latest events. If event
+  // takes more than a day then ignore.
+  void SetTimes(Event [] eventArray){
+
+    for(int j = 0; j < eventArray.length; j++){
+        if(j == 0){
+            firstEventStartTime = eventArray[0].getWhen().start();
+            firstEventEndTime = eventArray[0].getWhen().end();
+            secondEventStartTime = eventArray[0].getWhen().start();
+        }
+        else if(eventArray[j].getWhen().duration() == TimeRange.WHOLE_DAY.duration()){}
+        else if(eventArray[j].getWhen().start() < firstEventStartTime){
+            firstEventStartTime = eventArray[j].getWhen().start();
+            firstEventEndTime = eventArray[j].getWhen().end();
+        }
+        else if(eventArray[j].getWhen().start() > secondEventStartTime){
+            secondEventStartTime = eventArray[j].getWhen().start();
+            secondEventEndTime = eventArray[j].getWhen().end();
+        }
+    }
+  }
+  // Check if any events overlap with each other.
+  Boolean isOverlapped(Event [] eventArray){
+      Boolean overlap;
+      int overlapFlag = 0;
+      for(int j = 0; j< eventArray.length; j++){
+          int nextEvent = j + 1;
+          if(nextEvent == eventArray.length){
+              nextEvent = j - (eventArray.length - 1);
+          }
+          overlap = eventArray[j].getWhen().overlaps(eventArray[nextEvent].getWhen());
+          if(overlap){
+              overlapFlag++;
+          }
+      }
+      if(overlapFlag >= 1){
+          return true;
+      }
+      else{
+          return false;
+      }
+  }
+  // Checks if any events take the whole day.
+  int eventTakeWholeDay(Event [] eventArray){
+      int wholedayCounter = 0;
+      for(int i = 0; i < eventArray.length; i++){
+            if(eventArray[i].getWhen().duration() ==  TimeRange.WHOLE_DAY.duration()){
+                wholedayCounter++;
+            }
+        }
+        return wholedayCounter;
   }
 }
